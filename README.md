@@ -28,6 +28,14 @@ Define the following properties in the main **application.properties** file or u
 $ ./gradlew bootRun
 ```
 
+or
+
+```
+$ ./gradlew clean bootJar
+$ docker build -t spend-the-night-app:development .
+$ docker run -p 8080:8080 --security-opt seccomp=unconfined -e STN_AUTH_SERVER_DOMAIN="http://{DOMAIN}:{PORT}" spend-the-night-app:development
+```
+
 **Note:** For tests to run successfully, the client secrets and tokens also have to be included in the test **application.properties** file.
 
 ### Request Authorization
