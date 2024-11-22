@@ -204,9 +204,7 @@ class AuthTest extends RequestSpecification {
 		when:
 			final userNameWithSpaces = "  $HOST1 "
 
-			def placeOffer = fromJson(basicPlaceOffer())
-			placeOffer.userName = userNameWithSpaces
-			placeOffer = toJson(placeOffer)
+			def placeOffer = basicPlaceOffer(userNameWithSpaces)
 
 			final id = getId(fromJson(doPost(PLACE_OFFERS_URI, basicPlaceOffer())))
 
@@ -232,9 +230,7 @@ class AuthTest extends RequestSpecification {
 
 	def "A request with an access token for the wrong user should respond with status code 403 and a meaningful error message"() {
 		when:
-			def placeOffer = fromJson(basicPlaceOffer())
-			placeOffer.userName = HOST1
-			placeOffer = toJson(placeOffer)
+			def placeOffer = basicPlaceOffer(HOST1)
 
 			final id = getId(fromJson(doPost(PLACE_OFFERS_URI, placeOffer, APPLICATION_JSON, getToken(HOST1))))
 
@@ -272,9 +268,7 @@ class AuthTest extends RequestSpecification {
 		when:
 			final nonexistingUserName = 'i_dont_exist'
 
-			def placeOffer = fromJson(basicPlaceOffer())
-			placeOffer.userName = nonexistingUserName
-			placeOffer = toJson(placeOffer)
+			def placeOffer = basicPlaceOffer(nonexistingUserName)
 
 			final id = getId(fromJson(doPost(PLACE_OFFERS_URI, basicPlaceOffer())))
 
@@ -308,9 +302,7 @@ class AuthTest extends RequestSpecification {
 		when:
 			final emptyUserName = ' '
 
-			def placeOffer = fromJson(basicPlaceOffer())
-			placeOffer.userName = emptyUserName
-			placeOffer = toJson(placeOffer)
+			def placeOffer = basicPlaceOffer(emptyUserName)
 
 			final id = getId(fromJson(doPost(PLACE_OFFERS_URI, basicPlaceOffer())))
 
@@ -344,9 +336,7 @@ class AuthTest extends RequestSpecification {
 		when:
 			final nullUserName = null
 
-			def placeOffer = fromJson(detailedPlaceOffer())
-			placeOffer.userName = nullUserName
-			placeOffer = toJson(placeOffer)
+			def placeOffer = detailedPlaceOffer(nullUserName)
 
 			final id = getId(fromJson(doPost(PLACE_OFFERS_URI, basicPlaceOffer())))
 
@@ -464,9 +454,7 @@ class AuthTest extends RequestSpecification {
 		when:
 			final user = USER_DELETED
 
-			def placeOffer = fromJson(detailedPlaceOffer())
-			placeOffer.userName = user
-			placeOffer = toJson(placeOffer)
+			def placeOffer = detailedPlaceOffer(user)
 
 			final id = getId(fromJson(doPost(PLACE_OFFERS_URI, basicPlaceOffer())))
 
@@ -505,9 +493,7 @@ class AuthTest extends RequestSpecification {
 		when:
 			final user = USER_RENAMED
 
-			def placeOffer = fromJson(detailedPlaceOffer())
-			placeOffer.userName = user
-			placeOffer = toJson(placeOffer)
+			def placeOffer = detailedPlaceOffer(user)
 
 			final id = getId(fromJson(doPost(PLACE_OFFERS_URI, basicPlaceOffer())))
 

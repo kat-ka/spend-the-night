@@ -98,6 +98,10 @@ class RequestSpecification extends Specification {
 		withUniqueTitle(basicPlaceOffer)
 	}
 
+	def basicPlaceOffer(userName) {
+		userPlaceOffer(basicPlaceOffer(), userName)
+	}
+
 	private detailedPlaceOffer
 
 	def detailedPlaceOffer() {
@@ -105,6 +109,10 @@ class RequestSpecification extends Specification {
 			detailedPlaceOffer = placeOffer(PlaceUtil.DETAILED_PLACE_OFFER)
 		}
 		withUniqueTitle(detailedPlaceOffer)
+	}
+
+	def detailedPlaceOffer(userName) {
+		userPlaceOffer(detailedPlaceOffer(), userName)
 	}
 
 	private placeOffer(placeOffer) {
@@ -130,6 +138,12 @@ class RequestSpecification extends Specification {
 	def withUniqueTitle(placeOffer) {
 		def placeOfferObject = fromJson(placeOffer)
 		placeOfferObject.accommodation.title = "Cozy Apartment in City Center (no. ${random()})"
+		toJson(placeOfferObject)
+	}
+
+	def userPlaceOffer(placeOffer, userName) {
+		def placeOfferObject = fromJson(placeOffer)
+		placeOfferObject.userName = userName
 		toJson(placeOfferObject)
 	}
 

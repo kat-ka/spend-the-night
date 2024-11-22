@@ -65,15 +65,12 @@ class PlaceOfferPostRequestTest extends RequestSpecification {
 
 	def "PlaceOffer requests should only manage PlaceOffers from this user"() {
 		given:
-			def placeOffer1 = fromJson(basicPlaceOffer())
-			placeOffer1.userName = HOST1
-
-			def placeOffer2 = fromJson(detailedPlaceOffer())
-			placeOffer2.userName = HOST2
+			def placeOffer1 = basicPlaceOffer(HOST1)
+			def placeOffer2 = detailedPlaceOffer(HOST2)
 
 		when:
-			String id1 = getId(fromJson(doPost(PLACE_OFFERS_URI, toJson(placeOffer1), APPLICATION_JSON, getToken(HOST1))))
-			String id2 = getId(fromJson(doPost(PLACE_OFFERS_URI, toJson(placeOffer2), APPLICATION_JSON, getToken(HOST2))))
+			String id1 = getId(fromJson(doPost(PLACE_OFFERS_URI, placeOffer1, APPLICATION_JSON, getToken(HOST1))))
+			String id2 = getId(fromJson(doPost(PLACE_OFFERS_URI, placeOffer2, APPLICATION_JSON, getToken(HOST2))))
 
 		and:
 			def response1 = doGet("$PLACE_OFFERS_URI/$id1", getToken(HOST2))
@@ -106,10 +103,10 @@ class PlaceOfferPostRequestTest extends RequestSpecification {
 			assert responsePlaceOffers2.content.any  { getId(it) == id2 }
 
 		when:
-			response1 = doPut("$PLACE_OFFERS_URI/$id1", toJson(placeOffer1), APPLICATION_JSON, getToken(HOST2))
-			response2 = doPut("$PLACE_OFFERS_URI/$id2", toJson(placeOffer2), APPLICATION_JSON, getToken(HOST1))
-			response3 = doPut("$PLACE_OFFERS_URI/$id1", toJson(placeOffer1), APPLICATION_JSON, getToken(HOST1))
-			response4 = doPut("$PLACE_OFFERS_URI/$id2", toJson(placeOffer2), APPLICATION_JSON, getToken(HOST2))
+			response1 = doPut("$PLACE_OFFERS_URI/$id1", placeOffer1, APPLICATION_JSON, getToken(HOST2))
+			response2 = doPut("$PLACE_OFFERS_URI/$id2", placeOffer2, APPLICATION_JSON, getToken(HOST1))
+			response3 = doPut("$PLACE_OFFERS_URI/$id1", placeOffer1, APPLICATION_JSON, getToken(HOST1))
+			response4 = doPut("$PLACE_OFFERS_URI/$id2", placeOffer2, APPLICATION_JSON, getToken(HOST2))
 
 		then:
 			resultIs(response1, FORBIDDEN)
@@ -830,15 +827,13 @@ class PlaceOfferPostRequestTest extends RequestSpecification {
 		given:
 			def placeOffer = detailedPlaceOffer()
 
-			def placeOffer1 = fromJson(placeOffer)
-			placeOffer1.userName = HOST1
-
-			def placeOffer2 = fromJson(placeOffer)
-			placeOffer2.userName = HOST2
+			def (placeOffer1, placeOffer2) = [HOST1, HOST2].collect { userPlaceOffer(placeOffer, it) }
 
 		when:
-			final response1 = doPost(PLACE_OFFERS_URI, toJson(placeOffer1), APPLICATION_JSON, getToken(HOST1))
-			final response2 = doPost(PLACE_OFFERS_URI, toJson(placeOffer2), APPLICATION_JSON, getToken(HOST2))
+			final response1 = doPost(PLACE_OFFERS_URI, placeOffer1, APPLICATION_JSON, getToken(HOST1))
+			final response2 = doPost(PLACE_OFFERS_URI, placeOffer2, APPLICATION_JSON, getToken(HOST2))
+
+			(placeOffer1, placeOffer2) = [placeOffer1, placeOffer2].collect { fromJson(it) }
 
 		then:
 			resultIs(response1, CREATED)

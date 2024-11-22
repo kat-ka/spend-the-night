@@ -202,19 +202,15 @@ class PlaceOfferPutRequestTest extends RequestSpecification {
 
 	def "A put request with the same accommodation title for different users should work and return 201"() {
 		given:
-			def placeOffer1 = fromJson(basicPlaceOffer())
-			placeOffer1.userName = HOST1
-
-			def placeOffer2 = fromJson(basicPlaceOffer())
-			placeOffer2.userName = HOST2
+			def (placeOffer1, placeOffer2) = [HOST1, HOST2].collect { basicPlaceOffer(it) }
 
 		when:
-			String id1 = getId(fromJson(doPost(PLACE_OFFERS_URI, toJson(placeOffer1), APPLICATION_JSON, getToken(HOST1))))
-			String id2 = getId(fromJson(doPost(PLACE_OFFERS_URI, toJson(placeOffer2), APPLICATION_JSON, getToken(HOST2))))
+			String id1 = getId(fromJson(doPost(PLACE_OFFERS_URI, placeOffer1, APPLICATION_JSON, getToken(HOST1))))
+			String id2 = getId(fromJson(doPost(PLACE_OFFERS_URI, placeOffer2, APPLICATION_JSON, getToken(HOST2))))
 
 		and:
-			placeOffer2.userName = HOST1
-			final response = doPut("$PLACE_OFFERS_URI/$id1", toJson(placeOffer2), APPLICATION_JSON, getToken(HOST1))
+			placeOffer2 = userPlaceOffer(placeOffer2, HOST1)
+			final response = doPut("$PLACE_OFFERS_URI/$id1", placeOffer2, APPLICATION_JSON, getToken(HOST1))
 
 		then:
 			resultIs(response, OK)

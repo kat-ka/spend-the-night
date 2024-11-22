@@ -265,11 +265,10 @@ class PlaceSearchGetRequestTest extends RequestSpecification {
 
 	def "A get request with an invalid or too high size parameter should use the default size 10 or max size 500 and respond with status code 200"() {
 		given:
-			def placeOffer = fromJson(detailedPlaceOffer())
-			placeOffer.userName = HOST4
+			def placeOffer = detailedPlaceOffer(HOST4)
 
 		when:
-			(0..500+3).each { doPost(PLACE_OFFERS_URI, withUniqueTitle(toJson(placeOffer)), APPLICATION_JSON, getToken(HOST4)) }
+			(0..500+3).each { doPost(PLACE_OFFERS_URI, withUniqueTitle(placeOffer), APPLICATION_JSON, getToken(HOST4)) }
 
 		and:
 			final response1 = doGetWith4Params(PLACE_SEARCH_URI, USER_NAME, HOST2,  TOWN, 'Berlin', SIZE, 'thirty', ' ', '', getToken(HOST2))

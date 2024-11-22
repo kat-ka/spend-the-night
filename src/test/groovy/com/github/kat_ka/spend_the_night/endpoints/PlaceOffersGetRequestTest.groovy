@@ -26,16 +26,12 @@ class PlaceOffersGetRequestTest extends RequestSpecification {
 			String userB = HOST2
 			String userC = HOST3
 
-			def (placeOfferA, placeOfferB) = [userA, userB].collect {
-				def placeOffer = fromJson(detailedPlaceOffer())
-				placeOffer.userName = it
-				placeOffer
-			}
+			def (placeOfferA, placeOfferB) = [userA, userB].collect { detailedPlaceOffer(it) }
 
 		when:
-			String id1 = getId(fromJson(doPost(PLACE_OFFERS_URI, toJson(placeOfferA), APPLICATION_JSON, getToken(userA))))
-			String id2 = getId(fromJson(doPost(PLACE_OFFERS_URI, withUniqueTitle(toJson(placeOfferA)), APPLICATION_JSON, getToken(userA))))
-			String id3 = getId(fromJson(doPost(PLACE_OFFERS_URI, toJson(placeOfferB), APPLICATION_JSON, getToken(userB))))
+			String id1 = getId(fromJson(doPost(PLACE_OFFERS_URI, placeOfferA, APPLICATION_JSON, getToken(userA))))
+			String id2 = getId(fromJson(doPost(PLACE_OFFERS_URI, withUniqueTitle(placeOfferA), APPLICATION_JSON, getToken(userA))))
+			String id3 = getId(fromJson(doPost(PLACE_OFFERS_URI, placeOfferB, APPLICATION_JSON, getToken(userB))))
 
 		and:
 			final responseA = doGetWith3Params(PLACE_OFFERS_URI, USER_NAME, userA, SIZE, maxPageSize, ' ', '', getToken(userA))
@@ -105,11 +101,10 @@ class PlaceOffersGetRequestTest extends RequestSpecification {
 
 	def "A get request with a size parameter should return the right amount of PlaceOffers along with status code 200"() {
 		when:
-			def placeOfferD = fromJson(detailedPlaceOffer())
-			placeOfferD.userName = userD
+			def placeOfferD = detailedPlaceOffer(userD)
 
 			final tokenD = getToken(userD)
-			(0..1).each { doPost(PLACE_OFFERS_URI, withUniqueTitle(toJson(placeOfferD)), APPLICATION_JSON, tokenD) }
+			(0..1).each { doPost(PLACE_OFFERS_URI, withUniqueTitle(placeOfferD), APPLICATION_JSON, tokenD) }
 
 		and:
 			final response = doGetWith3Params(PLACE_OFFERS_URI, USER_NAME, userD, SIZE, requestSize, ' ', '', tokenD)
@@ -132,12 +127,11 @@ class PlaceOffersGetRequestTest extends RequestSpecification {
 
 	def "A get request with a page parameter should return the right amount of PlaceOffers along with status code 200"() {
 		when:
-			def placeOfferE = fromJson(detailedPlaceOffer())
-			placeOfferE.userName = userE
+			def placeOfferE = detailedPlaceOffer(userE)
 
 			final tokenE = getToken(userE)
 			deletePlaceOffersForExampleUser3()
-			(0..2).each { doPost(PLACE_OFFERS_URI, withUniqueTitle(toJson(placeOfferE)), APPLICATION_JSON, tokenE) }
+			(0..2).each { doPost(PLACE_OFFERS_URI, withUniqueTitle(placeOfferE), APPLICATION_JSON, tokenE) }
 
 		and:
 			final response = doGetWith3Params(PLACE_OFFERS_URI, USER_NAME, userE, SIZE, '2', PAGE, requestPage, tokenE)
@@ -195,11 +189,10 @@ class PlaceOffersGetRequestTest extends RequestSpecification {
 
 	def "A get request with an invalid or too high size parameter should use the default size 10 or max size 500 and respond with status code 200"() {
 		when:
-			def placeOfferG = fromJson(detailedPlaceOffer())
-			placeOfferG.userName = userG
+			def placeOfferG = detailedPlaceOffer(userG)
 
 			def tokenG = getToken(userG)
-			(0..responseSize+3).each { doPost(PLACE_OFFERS_URI, withUniqueTitle(toJson(placeOfferG)), APPLICATION_JSON, tokenG) }
+			(0..responseSize+3).each { doPost(PLACE_OFFERS_URI, withUniqueTitle(placeOfferG), APPLICATION_JSON, tokenG) }
 
 		and:
 			final response = doGetWith3Params(PLACE_OFFERS_URI, USER_NAME, userG, SIZE, requestSize, ' ', '', tokenG)
@@ -226,12 +219,11 @@ class PlaceOffersGetRequestTest extends RequestSpecification {
 		given:
 			String userH = HOST3
 
-			def placeOfferH = fromJson(detailedPlaceOffer())
-			placeOfferH.userName = userH
+			def placeOfferH = detailedPlaceOffer(userH)
 
 		when:
 			deletePlaceOffersForExampleUser3()
-			doPost(PLACE_OFFERS_URI, toJson(placeOfferH), APPLICATION_JSON, getToken(userH))
+			doPost(PLACE_OFFERS_URI, placeOfferH, APPLICATION_JSON, getToken(userH))
 
 		and:
 			final response = doGetWith3Params(PLACE_OFFERS_URI, USER_NAME, userH, SIZE, maxPageSize, PAGE, 'two', getToken(userH))
