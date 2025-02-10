@@ -62,6 +62,6 @@ class SwaggerTest extends WebToolSpecification {
 			final json = response.asString()
 
 		then:
-			JsonPath.from(json).get('openapi') == '3.0.1'
+			JsonPath.from(json).get('openapi') == '3.1.0'
 	}
 }
